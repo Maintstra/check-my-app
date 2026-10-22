@@ -1,0 +1,1 @@
+This is a harmless packaged-artifact fixture. It has no executable behavior.

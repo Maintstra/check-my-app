@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "check-my-app-report@1.1.0",
+  "mode": "Delivery Closure",
+  "product": {
+    "name": "Sample Workbench",
+    "type": "desktop",
+    "artifact": {
+      "kind": "packaged-installer",
+      "identity": "sample-installer-v1",
+      "platform": "Windows",
+      "version": "1.0.0",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  "scope": {
+    "persona": "A non-technical bookkeeper",
+    "journeys": [
+      {"id": "J1", "name": "Install and launch", "required": true, "result": "passed", "claimId": "C1"},
+      {"id": "J2", "name": "Save a business setting", "required": true, "result": "passed", "claimId": "C2"}
+    ],
+    "permittedActions": ["install-local-fixture", "write-local-fixture"],
+    "prohibitedExternalEffects": ["write-production-data", "send-message"]
+  },
+  "verdict": "Delivery ready",
+  "claims": [
+    {"id": "C1", "status": "confirmed", "statement": "The exact installer completed installation and first launch.", "evidenceIds": ["E1"]},
+    {"id": "C2", "status": "confirmed", "statement": "The packaged application saved and read back the setting.", "evidenceIds": ["E2"]}
+  ],
+  "evidence": [
+    {"id": "E1", "type": "interaction-trace", "source": "fixture://install-pass.json", "summary": "Installer and first launch completed on the clean test environment.", "redacted": true},
+    {"id": "E2", "type": "read-back", "source": "fixture://setting-readback.json", "summary": "The saved value was read back from the packaged application.", "redacted": true},
+    {"id": "E3", "type": "deterministic-test", "source": "fixture://closure-pass-1.json", "summary": "All required journeys passed in full closure pass one.", "redacted": true},
+    {"id": "E4", "type": "deterministic-test", "source": "fixture://closure-pass-2.json", "summary": "All required journeys passed in full closure pass two.", "redacted": true}
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "title": "Save action lacked observable feedback",
+      "severity": "Must fix",
+      "status": "resolved",
+      "effort": "S",
+      "claimIds": ["C2"],
+      "evidenceIds": ["E2"],
+      "userImpact": "A user previously could not tell whether the setting was stored and could repeat the action.",
+      "rootCause": "The submission result was not rendered beside the control that initiated the save request.",
+      "recommendation": {
+        "location": "Business settings > Save action and inline status region",
+        "recommendedChange": "Render the persisted success or specific failure result beside the Save control after the request completes.",
+        "alternative": "Show a page-level result banner and move keyboard focus to it after submission.",
+        "tradeoffs": "Inline feedback has stronger action association; a banner is easier to reuse but can be missed on long pages."
+      },
+      "retest": "Save successfully and with an injected failure in the packaged build; verify the exact result remains visible beside the control."
+    }
+  ],
+  "limitations": [],
+  "untestedAreas": [],
+  "externalEffects": {"observed": ["installed-local-fixture"], "prohibited": ["write-production-data", "send-message"]},
+  "release": {
+    "packagedJourneyTested": true,
+    "cleanMachineTested": true,
+    "installTested": true,
+    "restartTested": true,
+    "uninstallTested": true,
+    "updateTested": true,
+    "rollbackTested": true
+  },
+  "closure": {
+    "boundary": {
+      "capabilities": [
+        {"id": "CAP1", "name": "Install, launch, and persist settings", "disposition": "required", "journeyIds": ["J1", "J2"], "rationale": "Core delivered capability set."}
+      ],
+      "roles": [
+        {"id": "R1", "name": "Standard application user", "disposition": "required", "journeyIds": ["J1", "J2"], "rationale": "Primary supported permission role."}
+      ],
+      "surfaces": [
+        {"id": "S1", "name": "Windows desktop application", "disposition": "required", "journeyIds": ["J1", "J2"], "rationale": "Primary supported user surface."}
+      ],
+      "personas": [
+        {"id": "P1", "name": "Non-technical bookkeeper", "disposition": "required", "journeyIds": ["J1", "J2"], "rationale": "Primary delivery persona."}
+      ],
+      "configurations": [
+        {"id": "CFG1", "name": "Windows standard user", "disposition": "required", "journeyIds": ["J1", "J2"], "rationale": "Supported deployment configuration."}
+      ],
+      "lifecycleStages": [
+        {"id": "L1", "name": "Install, first launch, restart, and uninstall", "disposition": "required", "journeyIds": ["J1"], "rationale": "Required packaged lifecycle."}
+      ],
+      "safetyBoundaries": [
+        {"id": "SAFE1", "name": "No production writes or outbound messages", "disposition": "required", "journeyIds": ["J1", "J2"], "rationale": "Required external-effect safety boundary."}
+      ]
+    },
+    "passes": [
+      {
+        "id": "PASS1",
+        "artifactIdentity": "sample-installer-v1",
+        "artifactSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "fullMatrix": true,
+        "journeyResults": [{"journeyId": "J1", "result": "passed"}, {"journeyId": "J2", "result": "passed"}],
+        "newFindingIds": [],
+        "reopenedFindingIds": [],
+        "evidenceIds": ["E3"]
+      },
+      {
+        "id": "PASS2",
+        "artifactIdentity": "sample-installer-v1",
+        "artifactSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "fullMatrix": true,
+        "journeyResults": [{"journeyId": "J1", "result": "passed"}, {"journeyId": "J2", "result": "passed"}],
+        "newFindingIds": [],
+        "reopenedFindingIds": [],
+        "evidenceIds": ["E4"]
+      }
+    ],
+    "cleanPassCount": 2
+  }
+}

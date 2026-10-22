@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "check-my-app-report@1.0.0",
+  "mode": "Release Gate",
+  "product": {"name": "Example", "type": "desktop", "artifact": {"kind": "development-server", "identity": "dev", "platform": "Windows"}},
+  "scope": {"persona": "Customer", "journeys": [], "permittedActions": ["read"], "prohibitedExternalEffects": ["write"]},
+  "verdict": "Delivery ready",
+  "claims": [],
+  "evidence": [],
+  "findings": [],
+  "limitations": [],
+  "untestedAreas": [],
+  "externalEffects": {"observed": [], "prohibited": ["write"]},
+  "release": {"packagedJourneyTested": false, "cleanMachineTested": false, "installTested": false, "restartTested": false, "uninstallTested": false}
+}

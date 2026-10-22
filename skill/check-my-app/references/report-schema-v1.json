@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:check-my-app:report:1.0.0",
+  "title": "Check My App audit report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "mode",
+    "product",
+    "scope",
+    "verdict",
+    "claims",
+    "evidence",
+    "findings",
+    "limitations",
+    "untestedAreas",
+    "externalEffects",
+    "release"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "check-my-app-report@1.0.0"},
+    "mode": {"enum": ["Audit", "Fix & Retest", "Release Gate"]},
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "artifact"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "type": {"enum": ["web", "desktop", "mobile", "agent", "hybrid", "other"]},
+        "artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "identity", "platform"],
+          "properties": {
+            "kind": {"enum": ["source", "development-server", "packaged-app", "packaged-installer", "hosted-release", "other"]},
+            "identity": {"type": "string", "minLength": 1},
+            "platform": {"type": "string", "minLength": 1},
+            "version": {"type": "string"},
+            "commit": {"type": "string"},
+            "sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"},
+            "signatureState": {"type": "string"}
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["persona", "journeys", "permittedActions", "prohibitedExternalEffects"],
+      "properties": {
+        "persona": {"type": "string", "minLength": 1},
+        "journeys": {"type": "array", "items": {"$ref": "#/$defs/journey"}},
+        "permittedActions": {"type": "array", "items": {"type": "string"}},
+        "prohibitedExternalEffects": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "verdict": {"enum": ["Not ready", "Pilot ready", "Delivery ready"]},
+    "claims": {"type": "array", "items": {"$ref": "#/$defs/claim"}},
+    "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "untestedAreas": {"type": "array", "items": {"type": "string"}},
+    "externalEffects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed", "prohibited"],
+      "properties": {
+        "observed": {"type": "array", "items": {"type": "string"}},
+        "prohibited": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "release": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["packagedJourneyTested", "cleanMachineTested", "installTested", "restartTested", "uninstallTested"],
+          "properties": {
+            "packagedJourneyTested": {"type": "boolean"},
+            "cleanMachineTested": {"type": "boolean"},
+            "installTested": {"type": "boolean"},
+            "restartTested": {"type": "boolean"},
+            "uninstallTested": {"type": "boolean"},
+            "updateTested": {"type": "boolean"},
+            "rollbackTested": {"type": "boolean"}
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "journey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "required", "result", "claimId"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "required": {"type": "boolean"},
+        "result": {"enum": ["passed", "failed", "blocked", "untested"]},
+        "claimId": {"type": "string", "minLength": 1}
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "statement", "evidenceIds"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["confirmed", "inference", "untested"]},
+        "statement": {"type": "string", "minLength": 1},
+        "evidenceIds": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "source", "summary", "redacted"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "type": {"enum": ["screenshot", "interaction-trace", "log", "read-back", "deterministic-test", "code-inspection", "document", "other"]},
+        "source": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "redacted": {"type": "boolean"}
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "severity", "effort", "claimIds", "evidenceIds", "userImpact", "rootCause", "recommendation", "retest"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "severity": {"enum": ["Blocking", "Must fix", "Improve", "Polish"]},
+        "effort": {"enum": ["S", "M", "L"]},
+        "claimIds": {"type": "array", "items": {"type": "string"}},
+        "evidenceIds": {"type": "array", "items": {"type": "string"}},
+        "userImpact": {"type": "string", "minLength": 20},
+        "rootCause": {"type": "string", "minLength": 20},
+        "recommendation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["location", "recommendedChange", "alternative", "tradeoffs"],
+          "properties": {
+            "location": {"type": "string", "minLength": 5},
+            "recommendedChange": {"type": "string", "minLength": 40},
+            "alternative": {"type": "string", "minLength": 20},
+            "tradeoffs": {"type": "string", "minLength": 20}
+          }
+        },
+        "retest": {"type": "string", "minLength": 25}
+      }
+    }
+  }
+}

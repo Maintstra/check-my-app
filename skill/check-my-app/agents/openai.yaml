@@ -1,0 +1,4 @@
+interface:
+  display_name: "Check My App"
+  short_description: "Audit, fix, and qualify apps with evidence"
+  default_prompt: "Use $check-my-app to inspect, fix, and retest this product until it passes a clearly bounded delivery gate."

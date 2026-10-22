@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:check-my-app:report:1.1.0",
+  "title": "Check My App report",
+  "$comment": "This schema enforces report structure. Run scripts/validate_report.py for cross-reference, artifact equality, independent-evidence, and readiness semantics.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "mode",
+    "product",
+    "scope",
+    "verdict",
+    "claims",
+    "evidence",
+    "findings",
+    "limitations",
+    "untestedAreas",
+    "externalEffects",
+    "release",
+    "closure"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "check-my-app-report@1.1.0"},
+    "mode": {"enum": ["Audit", "Fix & Retest", "Delivery Closure", "Release Gate"]},
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "artifact"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "type": {"enum": ["web", "desktop", "mobile", "agent", "hybrid", "other"]},
+        "artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "identity", "platform"],
+          "properties": {
+            "kind": {"enum": ["source", "development-server", "packaged-app", "packaged-installer", "hosted-release", "other"]},
+            "identity": {"type": "string", "minLength": 1},
+            "platform": {"type": "string", "minLength": 1},
+            "version": {"type": "string"},
+            "commit": {"type": "string"},
+            "sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"},
+            "signatureState": {"type": "string"}
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["persona", "journeys", "permittedActions", "prohibitedExternalEffects"],
+      "properties": {
+        "persona": {"type": "string", "minLength": 1},
+        "journeys": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/journey"}},
+        "permittedActions": {"type": "array", "items": {"type": "string"}},
+        "prohibitedExternalEffects": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "verdict": {"enum": ["Not ready", "Pilot ready", "Delivery ready"]},
+    "claims": {"type": "array", "items": {"$ref": "#/$defs/claim"}},
+    "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "untestedAreas": {"type": "array", "items": {"type": "string"}},
+    "externalEffects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed", "prohibited"],
+      "properties": {
+        "observed": {"type": "array", "items": {"type": "string"}},
+        "prohibited": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "release": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["packagedJourneyTested", "cleanMachineTested", "installTested", "restartTested", "uninstallTested"],
+          "properties": {
+            "packagedJourneyTested": {"type": "boolean"},
+            "cleanMachineTested": {"type": "boolean"},
+            "installTested": {"type": "boolean"},
+            "restartTested": {"type": "boolean"},
+            "uninstallTested": {"type": "boolean"},
+            "updateTested": {"type": "boolean"},
+            "rollbackTested": {"type": "boolean"}
+          }
+        }
+      ]
+    },
+    "closure": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/closure"}
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"mode": {"const": "Delivery Closure"}},
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "closure": {"$ref": "#/$defs/closure"},
+          "scope": {
+            "properties": {
+              "journeys": {
+                "minItems": 2,
+                "contains": {
+                  "type": "object",
+                  "properties": {"required": {"const": true}},
+                  "required": ["required"]
+                },
+                "minContains": 2
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {"closure": {"type": "null"}}
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mode": {"const": "Delivery Closure"},
+          "verdict": {"const": "Delivery ready"}
+        },
+        "required": ["mode", "verdict"]
+      },
+      "then": {
+        "properties": {
+          "product": {
+            "properties": {
+              "artifact": {"required": ["kind", "identity", "platform", "sha256"]}
+            }
+          },
+          "closure": {
+            "allOf": [
+              {"$ref": "#/$defs/closure"},
+              {
+                "properties": {
+                  "passes": {"minItems": 2},
+                  "cleanPassCount": {"minimum": 2}
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"verdict": {"const": "Delivery ready"}},
+        "required": ["verdict"]
+      },
+      "then": {
+        "properties": {
+          "mode": {"enum": ["Delivery Closure", "Release Gate"]},
+          "release": {"type": "object"}
+        },
+        "not": {
+          "properties": {
+            "findings": {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "severity": {"enum": ["Blocking", "Must fix"]},
+                  "status": {"enum": ["open", "reopened"]}
+                },
+                "required": ["severity", "status"]
+              }
+            }
+          },
+          "required": ["findings"]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "journey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "required", "result", "claimId"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "required": {"type": "boolean"},
+        "result": {"enum": ["passed", "failed", "blocked", "untested"]},
+        "claimId": {"type": "string", "minLength": 1}
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "statement", "evidenceIds"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["confirmed", "inference", "untested"]},
+        "statement": {"type": "string", "minLength": 1},
+        "evidenceIds": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "source", "summary", "redacted"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "type": {"enum": ["screenshot", "interaction-trace", "log", "read-back", "deterministic-test", "code-inspection", "document", "other"]},
+        "source": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "redacted": {"type": "boolean"}
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "severity", "status", "effort", "claimIds", "evidenceIds", "userImpact", "rootCause", "recommendation", "retest"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "severity": {"enum": ["Blocking", "Must fix", "Improve", "Polish"]},
+        "status": {"enum": ["open", "resolved", "reopened"]},
+        "effort": {"enum": ["S", "M", "L"]},
+        "claimIds": {"type": "array", "items": {"type": "string"}},
+        "evidenceIds": {"type": "array", "items": {"type": "string"}},
+        "userImpact": {"type": "string", "minLength": 20},
+        "rootCause": {"type": "string", "minLength": 20},
+        "recommendation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["location", "recommendedChange", "alternative", "tradeoffs"],
+          "properties": {
+            "location": {"type": "string", "minLength": 5},
+            "recommendedChange": {"type": "string", "minLength": 40},
+            "alternative": {"type": "string", "minLength": 20},
+            "tradeoffs": {"type": "string", "minLength": 20}
+          }
+        },
+        "retest": {"type": "string", "minLength": 25}
+      }
+    },
+    "coverageItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "disposition", "journeyIds", "rationale"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "disposition": {"enum": ["required", "excluded", "untested"]},
+        "journeyIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "rationale": {"type": "string", "minLength": 1}
+      }
+    },
+    "passJourney": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["journeyId", "result"],
+      "properties": {
+        "journeyId": {"type": "string", "minLength": 1},
+        "result": {"enum": ["passed", "failed", "blocked", "untested"]}
+      }
+    },
+    "closurePass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "artifactIdentity", "artifactSha256", "fullMatrix", "journeyResults", "newFindingIds", "reopenedFindingIds", "evidenceIds"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "artifactIdentity": {"type": "string", "minLength": 1},
+        "artifactSha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"},
+        "fullMatrix": {"type": "boolean"},
+        "journeyResults": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/passJourney"}},
+        "newFindingIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "reopenedFindingIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "evidenceIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["boundary", "passes", "cleanPassCount"],
+      "properties": {
+        "boundary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["capabilities", "roles", "surfaces", "personas", "configurations", "lifecycleStages", "safetyBoundaries"],
+          "properties": {
+            "capabilities": {"$ref": "#/$defs/coverageDimension"},
+            "roles": {"$ref": "#/$defs/coverageDimension"},
+            "surfaces": {"$ref": "#/$defs/coverageDimension"},
+            "personas": {"$ref": "#/$defs/coverageDimension"},
+            "configurations": {"$ref": "#/$defs/coverageDimension"},
+            "lifecycleStages": {"$ref": "#/$defs/coverageDimension"},
+            "safetyBoundaries": {"$ref": "#/$defs/coverageDimension"}
+          }
+        },
+        "passes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/closurePass"}},
+        "cleanPassCount": {"type": "integer", "minimum": 0}
+      }
+    },
+    "coverageDimension": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/coverageItem"},
+      "contains": {
+        "type": "object",
+        "properties": {"disposition": {"const": "required"}},
+        "required": ["disposition"]
+      },
+      "minContains": 1
+    }
+  }
+}

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Northstar Books</title>
+  <style>
+    body { margin: 0; font: 12px Arial, sans-serif; color: #1d3031; background: #f3f3ef; }
+    header { padding: 12px 18px; background: #07383a; color: white; }
+    main { padding: 10px; max-width: 980px; }
+    .status, .card { border: 1px solid #d8ddda; border-radius: 4px; background: white; margin: 3px 0; padding: 8px; }
+    .status { background: #e7f5ec; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+    label { color: #a2aaa8; }
+    input, select { width: 100%; box-sizing: border-box; height: 26px; }
+    button { height: 28px; margin-top: 4px; background: #087c79; color: white; border: 0; border-radius: 3px; }
+    .muted { color: #a0a8a5; }
+    .chat { position: fixed; right: 8px; bottom: 4px; background: #087c79; color: white; padding: 10px; }
+  </style>
+</head>
+<body>
+  <header><strong>Northstar Agent</strong> — Autonomous operations console</header>
+  <main>
+    <section class="status"><strong>All systems ready</strong> · Live processing available</section>
+    <section class="card">
+      <h1>Business setup and daily work</h1>
+      <p class="muted">Demonstration records are shown. External writes are currently disabled.</p>
+      <div class="grid">
+        <div><label>Provider internal key</label><input value="operating-account"></div>
+        <div><label>Mapping version</label><input value="customer-matching-v1"></div>
+        <div><label>Posting mode</label><select><option>Automatic</option></select></div>
+        <div><label>Receipt account</label><input placeholder="Exact code and name"></div>
+        <div><label>Tax type</label><input placeholder="Exact provider value"></div>
+        <div><label>Payment method</label><input placeholder="Exact visible name"></div>
+      </div>
+      <button id="save">Save and continue</button>
+      <span id="save-result"></span>
+    </section>
+    <section class="card"><strong>Connection</strong> Ready</section>
+    <section class="card"><strong>Posting rules</strong> Setup required</section>
+    <section class="card"><strong>Auto processing</strong> Suspended — evidence stale</section>
+  </main>
+  <button class="chat">Ask Northstar</button>
+  <script>
+    document.querySelector('#save').addEventListener('click', () => {
+      // Deliberate fixture defect: no feedback and no state change.
+    });
+  </script>
+</body>
+</html>

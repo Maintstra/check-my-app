@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "check-my-app-report@1.0.0",
+  "mode": "Audit",
+  "product": {
+    "name": "Sample Workbench",
+    "type": "web",
+    "artifact": {
+      "kind": "development-server",
+      "identity": "local-fixture-v1",
+      "platform": "Windows"
+    }
+  },
+  "scope": {
+    "persona": "A non-technical bookkeeper",
+    "journeys": [
+      {
+        "id": "J1",
+        "name": "Save a business setting",
+        "required": true,
+        "result": "failed",
+        "claimId": "C1"
+      }
+    ],
+    "permittedActions": ["read", "navigate", "capture-redacted-evidence"],
+    "prohibitedExternalEffects": ["write-production-data", "send-message"]
+  },
+  "verdict": "Not ready",
+  "claims": [
+    {
+      "id": "C1",
+      "status": "confirmed",
+      "statement": "The save action produced no visible success or failure feedback.",
+      "evidenceIds": ["E1"]
+    },
+    {
+      "id": "C2",
+      "status": "untested",
+      "statement": "Keyboard focus order was not exercised in this run.",
+      "evidenceIds": []
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "screenshot",
+      "source": "fixture://save-state.png",
+      "summary": "The form remains unchanged after Save is selected.",
+      "redacted": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "title": "Save action has no observable result",
+      "severity": "Must fix",
+      "effort": "S",
+      "claimIds": ["C1"],
+      "evidenceIds": ["E1"],
+      "userImpact": "A user cannot tell whether the setting is stored and may repeat or abandon the task.",
+      "rootCause": "The form submission state is not rendered next to the control that initiated the save.",
+      "recommendation": {
+        "location": "Business settings > Save action and inline status region",
+        "recommendedChange": "Render a persistent inline Saved checkmark or a specific error beside the Save control after the request completes.",
+        "alternative": "Show a page-level confirmation banner and move focus to it after submission.",
+        "tradeoffs": "Inline feedback has stronger action association; a banner is easier to reuse but can be missed on long pages."
+      },
+      "retest": "Save once successfully and once with an injected failure; confirm the exact result and next action remain visible beside the control."
+    }
+  ],
+  "limitations": ["Only the synthetic save journey was exercised."],
+  "untestedAreas": ["Keyboard focus order", "Packaged application lifecycle"],
+  "externalEffects": {
+    "observed": [],
+    "prohibited": ["write-production-data", "send-message"]
+  },
+  "release": null
+}

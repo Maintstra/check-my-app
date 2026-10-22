@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "check-my-app-report@1.0.0",
+  "mode": "Fix & Retest",
+  "product": {
+    "name": "Save feedback fixture",
+    "type": "web",
+    "artifact": {
+      "kind": "source",
+      "identity": "tests/forward/fix-fixture/app.html",
+      "platform": "Local HTML fixture on Windows"
+    }
+  },
+  "scope": {
+    "persona": "A business settings user who needs confirmation after selecting Save, including when using assistive technology.",
+    "journeys": [
+      {
+        "id": "J-001",
+        "name": "Save business settings and receive accessible, specific feedback",
+        "required": true,
+        "result": "passed",
+        "claimId": "CL-002"
+      }
+    ],
+    "permittedActions": [
+      "Inspect and modify files only under tests/forward/fix-fixture",
+      "Run the fixture's local Python test"
+    ],
+    "prohibitedExternalEffects": [
+      "Network access or requests to external systems",
+      "Changes outside the authorized fixture directory",
+      "Production, account, or external-record mutations"
+    ]
+  },
+  "verdict": "Pilot ready",
+  "claims": [
+    {
+      "id": "CL-001",
+      "status": "confirmed",
+      "statement": "Before the fix, the deterministic save-feedback contract failed because the status semantics and specific result text were absent.",
+      "evidenceIds": [
+        "EV-001"
+      ]
+    },
+    {
+      "id": "CL-002",
+      "status": "confirmed",
+      "statement": "After the fix, the fixture's deterministic save-feedback contract passes.",
+      "evidenceIds": [
+        "EV-002"
+      ]
+    },
+    {
+      "id": "CL-003",
+      "status": "confirmed",
+      "statement": "The Save handler now writes a specific local-only result into an element with role=status.",
+      "evidenceIds": [
+        "EV-003"
+      ]
+    },
+    {
+      "id": "CL-004",
+      "status": "untested",
+      "statement": "Actual browser rendering, keyboard behavior, and screen-reader announcement were not exercised in this source-contract retest.",
+      "evidenceIds": []
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV-001",
+      "type": "deterministic-test",
+      "source": "python test_app.py (pre-fix local run on 2026-08-08)",
+      "summary": "One test ran and failed because app.html did not contain id=save-result with role=status; the page also lacked the required specific save result.",
+      "redacted": false
+    },
+    {
+      "id": "EV-002",
+      "type": "deterministic-test",
+      "source": "python test_app.py (post-fix local run on 2026-08-08)",
+      "summary": "One test ran and passed: SaveFeedbackContract.test_save_result_is_accessible_and_specific.",
+      "redacted": false
+    },
+    {
+      "id": "EV-003",
+      "type": "code-inspection",
+      "source": "tests/forward/fix-fixture/app.html:9 and app.html:11-14",
+      "summary": "The result paragraph has role=status, and the Save click handler assigns the exact text 'Saved locally. No external records were changed.' to that paragraph.",
+      "redacted": false
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "title": "Resolved: Save action did not expose accessible, specific feedback",
+      "severity": "Must fix",
+      "effort": "S",
+      "claimIds": [
+        "CL-001",
+        "CL-002",
+        "CL-003"
+      ],
+      "evidenceIds": [
+        "EV-001",
+        "EV-002",
+        "EV-003"
+      ],
+      "userImpact": "Before the fix, selecting Save produced no visible or assistive-technology status, so users could not tell whether anything changed or whether external records were affected.",
+      "rootCause": "The result paragraph had no live status semantics, and the Save click handler was empty, leaving the feedback contract unimplemented.",
+      "recommendation": {
+        "location": "app.html, save result element and Save click handler",
+        "recommendedChange": "Add role=status to #save-result and set its text on Save to 'Saved locally. No external records were changed.'; preserve the existing contract test.",
+        "alternative": "Use an aria-live=polite feedback region with equivalent specific copy and extend the regression test to assert that implementation.",
+        "tradeoffs": "role=status is the smaller semantic change and implies polite live-region behavior; explicit aria-live offers more control but adds markup and test maintenance."
+      },
+      "retest": "From the unchanged fixture source, run python test_app.py; pass requires one successful test, and any missing status role or exact feedback copy is a failure."
+    }
+  ],
+  "limitations": [
+    "The retest validates the source feedback contract only; it does not prove browser or screen-reader behavior.",
+    "Business-name persistence behavior is outside this fixture test and was not evaluated."
+  ],
+  "untestedAreas": [
+    "Rendered visual feedback in a real browser",
+    "Keyboard focus and screen-reader announcement behavior",
+    "Persistence or reload behavior for the business name"
+  ],
+  "externalEffects": {
+    "observed": [],
+    "prohibited": [
+      "Network access or external-system mutation",
+      "Production, account, or external-record changes"
+    ]
+  },
+  "release": null
+}

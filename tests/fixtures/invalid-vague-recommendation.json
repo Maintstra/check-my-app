@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "check-my-app-report@1.0.0",
+  "mode": "Audit",
+  "product": {"name": "Example", "type": "web", "artifact": {"kind": "development-server", "identity": "example", "platform": "Windows"}},
+  "scope": {"persona": "New user", "journeys": [], "permittedActions": ["read"], "prohibitedExternalEffects": ["write"]},
+  "verdict": "Not ready",
+  "claims": [],
+  "evidence": [],
+  "findings": [{
+    "id": "F1",
+    "title": "Crowded page",
+    "severity": "Improve",
+    "effort": "S",
+    "claimIds": [],
+    "evidenceIds": [],
+    "userImpact": "The page is difficult to scan.",
+    "rootCause": "Everything is shown at once.",
+    "recommendation": {"location": "Main page", "recommendedChange": "Simplify the UI.", "alternative": "Use a separate settings screen for configuration.", "tradeoffs": "A separate screen adds navigation but reduces daily-work density."},
+    "retest": "Repeat the same journey and compare the decision count and visible hierarchy."
+  }],
+  "limitations": [],
+  "untestedAreas": [],
+  "externalEffects": {"observed": [], "prohibited": ["write"]},
+  "release": null
+}

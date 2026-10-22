@@ -1,0 +1,12 @@
+{
+  "name": "Sample Desktop App",
+  "version": "0.1.0",
+  "platform": "Windows",
+  "sourceTests": 125,
+  "builtOn": "developer-machine",
+  "cleanMachineTested": false,
+  "packagedJourneyTested": false,
+  "restartTested": false,
+  "updateTested": false,
+  "uninstallTested": false
+}
