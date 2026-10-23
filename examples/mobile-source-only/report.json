@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "check-my-app-report@1.1.0",
+  "mode": "Audit",
+  "product": {
+    "name": "Synthetic mobile documentation example",
+    "type": "mobile",
+    "artifact": {
+      "kind": "source",
+      "identity": "synthetic-source-only-example",
+      "platform": "Android and iOS; no installed binary exercised"
+    }
+  },
+  "scope": {
+    "persona": "A mobile user resuming a photo report",
+    "journeys": [
+      {"id": "J1", "name": "Recover after denying camera permission", "required": true, "result": "untested", "claimId": "C1"},
+      {"id": "J2", "name": "Restore the correct draft after app restart", "required": true, "result": "untested", "claimId": "C2"}
+    ],
+    "permittedActions": ["read-source", "inspect-responsive-web-preview"],
+    "prohibitedExternalEffects": ["send-message", "write-production-data", "store-upload", "store-submission", "public-release"]
+  },
+  "verdict": "Not ready",
+  "claims": [
+    {"id": "C1", "status": "untested", "statement": "Camera denial and return-from-settings behavior was not exercised on a mobile device or emulator.", "evidenceIds": []},
+    {"id": "C2", "status": "untested", "statement": "Draft restoration and user/workspace isolation after app restart were not exercised on a mobile device or emulator.", "evidenceIds": []},
+    {"id": "C3", "status": "inference", "statement": "Source and responsive-browser inspection cannot establish native permission or lifecycle outcomes.", "evidenceIds": ["E1"]}
+  ],
+  "evidence": [
+    {"id": "E1", "type": "document", "source": "README.md#scenario", "summary": "Synthetic scenario description; not a runtime trace or evidence that a product passed.", "redacted": true}
+  ],
+  "findings": [],
+  "limitations": ["Synthetic example only; no real app, source repository, device, or emulator was tested.", "No product defect is asserted without runtime evidence."],
+  "untestedAreas": ["Native camera permission allow/deny/settings-return", "Background/foreground and restart persistence", "Physical-device locale and large-text layout", "Store review and release"],
+  "externalEffects": {
+    "observed": [],
+    "prohibited": ["send-message", "write-production-data", "store-upload", "store-submission", "public-release"]
+  },
+  "release": null,
+  "closure": null
+}

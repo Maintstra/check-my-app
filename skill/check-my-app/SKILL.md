@@ -2,7 +2,7 @@
 name: check-my-app
 description: Use when auditing, usability-testing, release-qualifying, improving, or checking and fixing a web, desktop, mobile, or agent product until it is ready to ship.
 metadata:
-  version: "1.3.0"
+  version: "1.3.1"
 ---
 
 # Check My App

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.1 — 2026-10-24
+
+- Clarify mobile evidence boundaries: source, responsive web, emulator, physical
+  device, and store review are separate claims.
+- Add a synthetic source-only mobile example that validates against report
+  schema 1.1.0 and leaves required device journeys untested with a Not ready verdict.
+- Exercise the public example through the existing report validator in tests.
+
+No validator/schema changes, new dependencies, or broader action permissions.
+
 ## 1.3.0 — 2026-10-23
 
 First public release.

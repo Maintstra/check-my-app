@@ -43,6 +43,11 @@ An audit request is not permission to fix. A fix request is not permission to se
 1. A machine report in the `check-my-app-report@1.1.0` JSON schema, checked by a dependency-free validator (`scripts/validate_report.py`, Python 3.10+ standard library only).
 2. A human summary that leads with the verdict: **Not ready**, **Pilot ready** or **Delivery ready**.
 
+## Example
+
+For a worked example of an honest incomplete audit, see the
+[source-only mobile report](examples/mobile-source-only/README.md).
+
 ## Install
 
 The skill is a single folder, `skill/check-my-app`.
