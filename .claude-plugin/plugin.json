@@ -1,0 +1,14 @@
+{
+  "name": "check-my-app",
+  "version": "1.3.1",
+  "description": "Evidence-first skill that audits, fixes and release-qualifies web, desktop, mobile and AI-agent products the way a real user experiences them. No evidence, no pass.",
+  "author": {
+    "name": "Maintstra",
+    "url": "https://github.com/Maintstra"
+  },
+  "homepage": "https://github.com/Maintstra/check-my-app",
+  "repository": "https://github.com/Maintstra/check-my-app",
+  "license": "MIT",
+  "keywords": ["qa", "usability-testing", "release-gate", "agent-skills", "codex"],
+  "skills": "./skill/"
+}

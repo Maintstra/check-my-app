@@ -41,7 +41,21 @@
 
 ## 安装
 
-把 `skill/check-my-app` 文件夹复制到 `~/.codex/skills/`（Codex）或 `~/.claude/skills/`（Claude Code）即可；Windows 为 `%USERPROFILE%\.codex\skills\`。
+任意 Agent（skills CLI）：
+
+```bash
+npx skills add Maintstra/check-my-app
+```
+
+Claude Code 插件：
+
+```text
+/plugin install check-my-app --marketplace Maintstra/check-my-app
+```
+
+（较旧版本先运行 `/plugin marketplace add Maintstra/check-my-app`，再运行 `/plugin install check-my-app@maintstra`。）
+
+也可以手动把 `skill/check-my-app` 文件夹复制到 `~/.codex/skills/`（Codex）或 `~/.claude/skills/`（Claude Code）即可；Windows 为 `%USERPROFILE%\.codex\skills\`。
 
 ## 使用示例
 

@@ -1,0 +1,15 @@
+{
+  "name": "maintstra",
+  "owner": {
+    "name": "Maintstra",
+    "url": "https://github.com/Maintstra"
+  },
+  "description": "Maintstra's open-source agent skills. Starts with Check My App: evidence-first audits, fixes and release gates for real user journeys.",
+  "plugins": [
+    {
+      "name": "check-my-app",
+      "source": "./",
+      "description": "Evidence-first skill that audits, fixes and release-qualifies apps the way a real user experiences them. No evidence, no pass."
+    }
+  ]
+}

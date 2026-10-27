@@ -4,6 +4,12 @@
 
 [中文说明](README.zh-CN.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · MIT licensed
 
+![Check My App catches a Save button with no feedback, rejects a fake "Delivery ready", then fixes and retests](docs/demo.gif)
+
+```bash
+npx skills add Maintstra/check-my-app
+```
+
 Coding agents are good at writing code and bad at telling you whether the product actually works. "All tests pass" while the installer is broken, the setup wizard dead-ends, or the agent silently claims a payment went through. Check My App gives your agent (Codex, Claude Code, or any agent that reads `SKILL.md`) a strict, repeatable method for answering one question honestly:
 
 > **Is this product ready for the person who will use it — and what exactly must change if not?**
@@ -52,14 +58,33 @@ For a worked example of an honest incomplete audit, see the
 
 The skill is a single folder, `skill/check-my-app`.
 
-**Codex**
+**Any agent (skills CLI)**
+
+```bash
+npx skills add Maintstra/check-my-app
+```
+
+**Claude Code plugin**
+
+```text
+/plugin install check-my-app --marketplace Maintstra/check-my-app
+```
+
+On older Claude Code versions, add the marketplace first:
+
+```text
+/plugin marketplace add Maintstra/check-my-app
+/plugin install check-my-app@maintstra
+```
+
+**Codex (manual copy)**
 
 ```bash
 git clone https://github.com/Maintstra/check-my-app.git
 cp -r check-my-app/skill/check-my-app ~/.codex/skills/
 ```
 
-**Claude Code**
+**Claude Code (manual copy)**
 
 ```bash
 cp -r check-my-app/skill/check-my-app ~/.claude/skills/
