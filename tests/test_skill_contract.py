@@ -20,7 +20,7 @@ class SkillContractTests(unittest.TestCase):
 
     def test_skill_has_an_exact_version(self):
         text = SKILL.read_text(encoding="utf-8")
-        self.assertIn('version: "1.3.1"', text)
+        self.assertIn('version: "1.4.0"', text)
 
     def test_skill_defines_modes_evidence_and_mutation_boundary(self):
         text = SKILL.read_text(encoding="utf-8")

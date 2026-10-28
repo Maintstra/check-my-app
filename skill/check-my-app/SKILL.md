@@ -2,7 +2,7 @@
 name: check-my-app
 description: Use when auditing, usability-testing, release-qualifying, improving, or checking and fixing a web, desktop, mobile, or agent product until it is ready to ship.
 metadata:
-  version: "1.3.1"
+  version: "1.4.0"
 ---
 
 # Check My App
@@ -38,7 +38,7 @@ For Delivery Closure, multi-finding repairs or resumed audits, first read [refer
 6. **Build an evidence ledger.** Give every material claim an ID and status. A `confirmed` claim needs a screenshot, interaction trace, log, authoritative read-back, deterministic test, or equally direct evidence. Code inspection alone usually supports an `inference` about runtime behavior.
 7. **Write actionable findings.** Read [references/findings-and-report.md](references/findings-and-report.md) before the first finding, so report fields are captured once rather than reconstructed at the end. Every finding needs evidence, user impact, root cause, exact modification, recommended and alternative options, trade-offs, severity, effort, and a precise retest.
 8. **Close the delivery loop when requested.** Follow [references/delivery-closure.md](references/delivery-closure.md). Keep one finding ledger across passes, rerun the full declared matrix after fixes, and stop only at its convergence gate or an explicit resource/authority boundary.
-9. **Qualify the artifact when requested.** Read [references/release-gate.md](references/release-gate.md). Source tests do not prove the installer or hosted release. A blocking defect cannot be averaged away. Then run the five installed-reality gates in [references/installed-reality.md](references/installed-reality.md): locale completeness, representative real-data shapes, window size and scaling, information hierarchy, and desktop control fallback. Isolated fixture passes do not satisfy them.
+9. **Qualify the artifact when requested.** Read [references/release-gate.md](references/release-gate.md). Source tests do not prove the installer or hosted release. A blocking defect cannot be averaged away. Then run the five installed-reality gates in [references/installed-reality.md](references/installed-reality.md): locale completeness, representative real-data shapes, window size and scaling, information hierarchy, and desktop control fallback. Isolated fixture passes do not satisfy them. For an Apple App Store or external TestFlight submission, also run [references/app-store-review.md](references/app-store-review.md) on iPhone and iPad and recheck every past rejection.
 10. **Validate the structured report.** Save a `check-my-app-report@1.1.0` JSON report and run:
 
    ```powershell
